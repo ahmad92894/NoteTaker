@@ -1,33 +1,35 @@
 const express = require('express');
+const noteList = require('./db/notes.json');
 const app = express();
-const Port = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-
 app.get('*', (req, res) => {
-  res.sendFile(__dirname + '/views/index.html');
-  
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+//   console.log(noteList);
+
 });
 app.get('/notes', (req, res) => {
-    res.sendFile(__dirname + '/views/notes.html');
+    res.sendFile(path.join(__dirname +'/public/notes.html'));
+    
 });
 app.get('/api/notes', (req, res) => {
-    res.sendFile(__dirname + '/db/db.json');
+    res.json(noteList);
+
 });
 app.post('/api/notes', (req, res) => {
-    const newNote = req.body;
-    newNote.id = Date.now();
-    fs.readFile(__dirname + '/db/db.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const notes = JSON.parse(data);
-        notes.push(newNote);
-})});
-app.listen(Port, () => 
-    console.log(`App listening at http://localhost:${Port}`));
+    noteList.push(req.body);
+    res.json(noteList);
+    // console.log(noteList);
+    fs.writeFile('./db/notes.json', JSON.stringify(noteList), (err) => {
+        return err? console.error(err) : console.log('Note saved!');
+    });});
+app.listen(PORT, () => 
+    console.log(`App listening on PORT: ${PORT}`));
 
   
