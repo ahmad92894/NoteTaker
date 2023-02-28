@@ -1,7 +1,7 @@
-const app = require('express')
+const express = require('express')
 const router = express.Router();
 const fs = require('fs');
-let db = require('./db/db.json'); 
+let db = require('../db/db.json'); 
 
 
 
@@ -17,7 +17,7 @@ let db = require('./db/db.json');
 //         return err? console.error(err) : console.log('Note saved!');
 //     });});
     router.get('/notes', (req, res) => {
-        db = JSON.parse(fs.readFileSync('./db/db.json')) || {};
+        // db = JSON.parse(fs.readFileSync('./db/db.json')) || [];
         res.json(db);
     });
     router.post('/notes', (req, res) => {
@@ -26,7 +26,7 @@ let db = require('./db/db.json');
             id: db.length + 1
         }
         db.push(newNotetosave);
-        fs.writeFileSync( './db/db.json'), JSON.stringify(db);
+        fs.writeFileSync( './db/db.json', JSON.stringify(db,null,2));
         res.json(newNotetosave);
     });
 
